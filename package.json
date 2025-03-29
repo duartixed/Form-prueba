@@ -4,7 +4,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "lighthouse": "lighthouse http://localhost:3000 --output=json --output=html --view"
+    "lighthouse": "lighthouse http://localhost:3000 --output=json --output=html --view --chrome-flags='--headless --no-sandbox --disable-gpu --disable-dev-shm-usage --disable-software-rasterizer --disable-setuid-sandbox'"
   },
   "keywords": [],
   "author": "",
@@ -17,6 +17,7 @@
     "eslint-plugin-import": "^2.31.0",
     "hint": "^7.1.13",
     "lighthouse": "^12.5.1",
+    "puppeteer": "^24.4.0",
     "stylelint": "^13.13.1",
     "stylelint-config-standard": "^21.0.0",
     "stylelint-csstree-validator": "^1.9.0",
