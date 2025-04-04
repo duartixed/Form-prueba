@@ -1,4 +1,4 @@
-name: Build and Deploy to Azure Web App
+name: Build and Deploy to Azure VM
 
 on:
   push:
@@ -8,8 +8,12 @@ on:
     branches:
       - main
 
+permissions:
+  contents: read
+  id-token: write
+
 jobs:
-  build-and-deploy:
+  deploy-to-vm:
     runs-on: ubuntu-latest
 
     steps:
@@ -19,7 +23,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: "22"
+          node-version: "20"
 
       - name: Install dependencies
         run: npm install
@@ -27,20 +31,13 @@ jobs:
       - name: Build the project
         run: npm run build
 
-      - name: Deploy to Azure Web App
-        uses: azure/webapps-deploy@v2
-        with:
-          app-name: ${{ secrets.AZURE_WEBAPP_NAME }}
-          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
-          package: .
-
       - name: Execute remote SSH commands
         uses: appleboy/ssh-action@v0.1.10
         with:
-          host: ${{ secrets.VM_IP }}
-          username: ${{ secrets.VM_USERNAME }}
-          key: ${{ secrets.VM_PRIVATE_KEY }}
-          port: ${{ secrets.VM_PORT }}
+          host: "${{ secrets.VM_IP }}"
+          username: "${{ secrets.VM_USERNAME }}"
+          key: "${{ secrets.VM_PRIVATE_KEY }}"
+          port: "${{ secrets.VM_PORT }}"
           script: |
             cd ~/myapp
             npm install --production
