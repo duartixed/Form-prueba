@@ -3,7 +3,7 @@ name: Build and Deploy to Azure Web App
 on:
   push:
     branches:
-      - main #or your your deployment branch
+      - main
   pull_request:
     branches:
       - main
@@ -19,7 +19,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: "22" # or the version your project require
+          node-version: "22"
 
       - name: Install dependencies
         run: npm install
@@ -30,6 +30,18 @@ jobs:
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v2
         with:
-          app-name: ${{secrets.AZURE_WEBAPP_NAME}}
-          publish-profile: ${{secrets.AZURE_WEBAPP_PUBLISH_PROFILE}}
+          app-name: ${{ secrets.AZURE_WEBAPP_NAME }}
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
           package: .
+
+      - name: Execute remote SSH commands
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: ${{ secrets.VM_IP }}
+          username: ${{ secrets.VM_USERNAME }}
+          key: ${{ secrets.VM_PRIVATE_KEY }}
+          port: ${{ secrets.VM_PORT }}
+          script: |
+            cd ~/myapp
+            npm install --production
+            pm2 restart app || pm2 start server.js --name app
